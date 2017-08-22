@@ -3,13 +3,6 @@ require 'tempfile'
 
 class Toxtree
   RULES = {
-#toxtree.plugins.lewis.LewisTree
-#toxtree.plugins.moa.MOARules
-#toxtree.plugins.search.CompoundLookup
-#toxtree.plugins.smartcyp.rules.SMARTCYPRuleHigherRank
-#toxtree.plugins.smartcyp.rules.SMARTCYPRuleRank1
-#toxtree.plugins.smartcyp.rules.SMARTCYPRuleRank2
-#toxtree.plugins.smartcyp.rules.SMARTCYPRuleRank3
     "Cramer rules" => {
       :java_class => "toxTree.tree.cramer.CramerRules",
       :url => "http://toxtree.sourceforge.net/cramer.html"
@@ -80,12 +73,13 @@ class Toxtree
         `cd #{File.join(File.dirname(__FILE__),"..","Toxtree-v2.6.13","Toxtree")}; java -jar Toxtree-2.6.13.jar -i #{input.path} -m #{RULES[name][:java_class]} -n -o #{output}`
         prediction = CSV.read(output)
         header = prediction.shift
+        header.pop # remove last empty element
         prediction.each do |line|
           p = {"rule" => name}
           header.each_with_index do |h,i|
-            p[h] = line[i] unless h == ""
+            p[h] = line[i]
           end
-          predictions << p#{:smiles => line[0], :prediction => line[2], :rule => name}
+          predictions << p
         end
       end
     ensure
