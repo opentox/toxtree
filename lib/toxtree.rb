@@ -72,14 +72,24 @@ class Toxtree
       rules.each do |name|
         `cd #{File.join(File.dirname(__FILE__),"..","Toxtree-v2.6.13","Toxtree")}; java -jar Toxtree-2.6.13.jar -i #{input.path} -m #{RULES[name][:java_class]} -n -o #{output}`
         prediction = CSV.read(output)
-        header = prediction.shift
-        header.pop # remove last empty element
-        prediction.each do |line|
-          p = {"rule" => name}
-          header.each_with_index do |h,i|
-            p[h] = line[i]
+        unless prediction.empty?
+          header = prediction.shift
+          header.pop # remove last empty element
+          smiles.each do |smi|
+            line = prediction.flatten.include?(smi) ? prediction.find{|array| array[0 ]== smi} : ["nil","nil","nil","nil"]
+            p = {"rule" => name}
+            header.each_with_index do |h,i|
+              p[h] = line[i]
+            end
+            predictions << p
           end
-          predictions << p
+        else
+          smiles.each do |smi|
+            p = {"rule" => name}
+            p["SMILES"] = smi
+            p[name] = nil
+            predictions << p
+          end
         end
       end
     ensure

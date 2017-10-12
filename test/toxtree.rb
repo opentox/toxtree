@@ -22,5 +22,19 @@ class ToxtreeTest < MiniTest::Test
     skip
   end
 
+  def test_no_prediction
+    assert_equal Toxtree.predict("O=S(=O)(Oc1ccccc1)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCS(=O)(=O)Oc1ccccc1"), {"rule"=>"Cramer rules", "SMILES"=>"O=S(=O)(Oc1ccccc1)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCS(=O)(=O)Oc1ccccc1", "Cramer rules"=>nil}
+  end
+
+  def test_no_prediction_array
+    assert_equal Toxtree.predict(["O=S(=O)(Oc1ccccc1)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCS(=O)(=O)Oc1ccccc1","O=S(=O)(Oc1ccccc1)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCS(=O)(=O)Oc1ccccc1"]), [{"rule"=>"Cramer rules", "SMILES"=>"O=S(=O)(Oc1ccccc1)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCS(=O)(=O)Oc1ccccc1", "Cramer rules"=>nil}, {"rule"=>"Cramer rules", "SMILES"=>"O=S(=O)(Oc1ccccc1)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCS(=O)(=O)Oc1ccccc1", "Cramer rules"=>nil}]
+  end
+
+  def test_with_and_without_prediction_array
+    predictions = Toxtree.predict(["c1ccccc1NN","O=S(=O)(Oc1ccccc1)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCS(=O)(=O)Oc1ccccc1"])
+    assert_equal predictions.size, 2
+    assert_equal predictions, [{"rule"=>"Cramer rules", "SMILES"=>"c1ccccc1NN", "CRAMERFLAGS"=>nil, "Cramer rules"=>"High (Class III)", "toxTree.tree.cramer.CramerTreeResult"=>"1N,2N,3N,5N,6N,7N,16N,17N,19N,23Y,27Y,28N,30Y,31N,32N,22N,33N"}, {"rule"=>"Cramer rules", "SMILES"=>"nil", "CRAMERFLAGS"=>"nil", "Cramer rules"=>"nil", "toxTree.tree.cramer.CramerTreeResult"=>"nil"}]
+  end
+
 end
 
